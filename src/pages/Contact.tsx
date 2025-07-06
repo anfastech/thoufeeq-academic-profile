@@ -13,7 +13,7 @@ const Contact = () => {
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">Contact</h1>
+          <h1 className="text-4xl font-bold text-slate-800 mb-4 underline">Contact</h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Get in touch for academic collaborations, research inquiries, or professional discussions
           </p>
@@ -25,7 +25,7 @@ const Contact = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-blue-600" />
+                  {/* <Mail className="h-5 w-5 text-blue-600" /> */}
                   Email Contact
                 </CardTitle>
                 <CardDescription>
@@ -34,13 +34,13 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
-                    <Mail className="h-5 w-5 text-slate-600" />
+                  <div className="flex items-center gap-3 p-4 rounded-lg border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3" >
+                    <Mail className="h-12 w-12 text-slate-600 " />
                     <div>
                       <p className="font-medium text-slate-800">Primary Email</p>
                       <a 
                         href="mailto:thoufimry1@gmail.com"
-                        className="text-blue-600 hover:text-blue-700 transition-colors"
+                        className=" hover:text-blue-700 transition-colors"
                       >
                         thoufimry1@gmail.com
                       </a>
@@ -59,7 +59,7 @@ const Contact = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Download className="h-5 w-5 text-blue-600" />
+                  {/* <Download className="h-5 w-5 text-blue-600" /> */}
                   Academic Resources
                 </CardTitle>
                 <CardDescription>
@@ -67,7 +67,7 @@ const Contact = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" size="lg" className="w-full" asChild>
+                <Button variant="outline" size="lg" className="w-full border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3" asChild>
                   <a href="/resume.pdf" download>
                     <Download className="mr-2 h-5 w-5" />
                     Download Resume (PDF)

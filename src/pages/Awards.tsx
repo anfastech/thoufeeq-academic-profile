@@ -22,7 +22,7 @@ const Awards = () => {
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">Honors & Awards</h1>
+          <h1 className="text-4xl font-bold text-slate-800 mb-4 underline">Honors & Awards</h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Recognition for academic excellence and contributions to Arabic Literature
           </p>
@@ -30,7 +30,7 @@ const Awards = () => {
 
         {/* Featured Award */}
         <div className="mb-12">
-          <Card className="relative overflow-hidden hover:shadow-2xl transition-all duration-300">
+          <Card className="relative overflow-hidden hover:border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-bl-full opacity-10"></div>
             <CardHeader className="pb-6">
               <div className="flex items-center gap-4 mb-4">
@@ -51,7 +51,7 @@ const Awards = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6 ">
                 <div>
                   <h4 className="font-semibold text-slate-800 mb-3">Award Details</h4>
                   <p className="text-slate-700 leading-relaxed mb-4">
@@ -96,7 +96,7 @@ const Awards = () => {
 
         {/* Additional Recognition */}
         <div className="grid md:grid-cols-2 gap-8">
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="border hover:border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3 transition-shadow">
             <CardHeader>
               <CardTitle className="text-lg">Academic Achievements</CardTitle>
             </CardHeader>
@@ -122,7 +122,7 @@ const Awards = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="border hover:border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3 transition-shadow">
             <CardHeader>
               <CardTitle className="text-lg">Professional Recognition</CardTitle>
             </CardHeader>
@@ -150,7 +150,7 @@ const Awards = () => {
         </div>
 
         {/* Future Goals */}
-        <Card className="mt-12 hover:shadow-lg transition-shadow">
+        <Card className="mt-12 border hover:border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3 transition-border">
           <CardHeader>
             <CardTitle>Continuing Excellence</CardTitle>
             <CardDescription>

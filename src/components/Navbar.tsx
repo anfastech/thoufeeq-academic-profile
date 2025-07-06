@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ const Navbar = () => {
     { name: "Publications", path: "/publications" },
     { name: "Awards", path: "/awards" },
     { name: "Blog", path: "/blog" },
-    { name: "Contact", path: "/contact" }
+    { name: "Contact", path: "/contact" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -25,9 +24,11 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="font-bold text-xl text-slate-800 hover:text-blue-600 transition-colors">
-            Dr. Thoufeeq Rahman
-          </Link>
+          <img
+            src="/logo-thoufeeq-rahman.svg"
+            alt="Dr. Thoufeeq Rahman"
+            className="w-24"
+          />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
@@ -46,42 +47,53 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Navigation */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="sm">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <div className="flex items-center justify-between mb-6">
-                <span className="font-bold text-lg">Menu</span>
+          {/* Right side buttons */}
+          <div className="flex items-center space-x-2">
+            <Button className="px-2 text-gray-700 py-2 font-semibold hover:bg-transparent bg-gray-200 rounded-full">
+              Book a call
+            </Button>
+            <Button
+              id="menu-Button"
+              className="lg:hidden p-2 bg-gray-200 hover:bg-gray-300 rounded-full"
+              onClick={() => setIsOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+
+            {/* Mobile Navigation */}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild className="md:hidden">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsOpen(false)}
+                  className="p-2 bg-gray-200 hover:bg-gray-300 rounded-full"
                 >
-                  <X className="h-5 w-5" />
+                  <Menu className="h-5 w-5" />
                 </Button>
-              </div>
-              <div className="flex flex-col space-y-2">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                      isActive(item.path)
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="font-bold text-lg">Menu</span>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                        isActive(item.path)
+                          ? "bg-blue-100 text-blue-700"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </nav>

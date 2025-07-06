@@ -56,7 +56,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-slate-700 mt-8 pt-6 text-center text-sm">
-          <p>&copy; 2024 Dr. Thoufeeq Rahman Vazhakkat. All rights reserved.</p>
+          <p>&copy; 2025 Afonex. All rights reserved.</p>
         </div>
       </div>
     </footer>

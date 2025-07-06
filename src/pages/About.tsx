@@ -50,7 +50,7 @@ const About = () => {
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">About Dr. Thoufeeq Rahman</h1>
+          <h1 className="text-4xl font-bold text-slate-800 mb-4">About <span className="underline">Dr. Thoufeeq Rahman</span></h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             A dedicated educator and researcher in Arabic Language and Literature, 
             contributing to the understanding of contemporary Arabic fiction and cultural studies.
@@ -78,10 +78,10 @@ const About = () => {
                 the works of prominent authors like Alaa Al Aswany.
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                <Badge>Arabic Literature</Badge>
-                <Badge>Contemporary Fiction</Badge>
-                <Badge>Cultural Studies</Badge>
-                <Badge>Literary Criticism</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full ">Arabic Literature</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full">Contemporary Fiction</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full">Cultural Studies</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full">Literary Criticism</Badge>
               </div>
             </CardContent>
           </Card>
