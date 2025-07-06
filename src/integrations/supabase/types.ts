@@ -69,6 +69,45 @@ export type Database = {
         }
         Relationships: []
       }
+      publications: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          issn: string | null
+          publication_date: string
+          publisher: string
+          title: string
+          type: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          issn?: string | null
+          publication_date: string
+          publisher: string
+          title: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          issn?: string | null
+          publication_date?: string
+          publisher?: string
+          title?: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
