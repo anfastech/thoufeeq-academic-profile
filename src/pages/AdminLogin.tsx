@@ -72,6 +72,7 @@ const AdminLogin = () => {
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
+                className="border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -82,6 +83,7 @@ const AdminLogin = () => {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                className="border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
