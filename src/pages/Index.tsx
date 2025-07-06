@@ -1,14 +1,60 @@
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Download, Mail, BookOpen, Award, GraduationCap, User } from "lucide-react";
+import { Download, Mail, BookOpen, Award, GraduationCap, User, ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  thumbnail_url: string;
+  tags: string[];
+  created_at: string;
+}
+
 const Index = () => {
+  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRecentPosts();
+  }, []);
+
+  const fetchRecentPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('id, title, slug, excerpt, thumbnail_url, tags, created_at')
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      setRecentPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching recent posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
   const publications = [
     {
       title: "Political Issues in the Novel Chicago",
@@ -158,6 +204,82 @@ const Index = () => {
               View All Publications
             </Link>
           </Button>
+        </div>
+      </section>
+
+      {/* Recent Blog Posts */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Recent Blog Posts</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Latest insights and reflections on Arabic Literature and contemporary literary studies
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-slate-600">Loading recent posts...</p>
+            </div>
+          ) : recentPosts.length > 0 ? (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                {recentPosts.map((post) => (
+                  <Card key={post.id} className="hover:shadow-lg transition-all duration-300 group">
+                    {post.thumbnail_url && (
+                      <div className="aspect-video overflow-hidden rounded-t-lg">
+                        <img 
+                          src={post.thumbnail_url} 
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        {post.tags && post.tags.length > 0 && (
+                          <Badge variant="outline">{post.tags[0]}</Badge>
+                        )}
+                        <div className="flex items-center gap-1 text-slate-500 text-xs">
+                          <Calendar className="h-3 w-3" />
+                          <span>{formatDate(post.created_at)}</span>
+                        </div>
+                      </div>
+                      <CardTitle className="text-lg text-slate-800 leading-tight group-hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </CardTitle>
+                      {post.excerpt && (
+                        <CardDescription className="text-sm mt-2 line-clamp-3">
+                          {post.excerpt}
+                        </CardDescription>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <Button variant="ghost" size="sm" asChild className="p-0 h-auto font-medium">
+                        <Link to={`/blog/${post.slug}`}>
+                          Read More
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="text-center">
+                <Button variant="outline" size="lg" asChild>
+                  <Link to="/blog">
+                    <BookOpen className="mr-2 h-5 w-5" />
+                    View All Blog Posts
+                  </Link>
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-slate-600">No blog posts available yet.</p>
+            </div>
+          )}
         </div>
       </section>
 
