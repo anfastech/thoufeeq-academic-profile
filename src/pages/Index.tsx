@@ -50,7 +50,7 @@ const Index = () => {
   const [fadeTitle, setFadeTitle] = useState(true);
   const [fadePost, setFadePost] = useState(true);
   const [titleText, setTitleText] = useState("Lt. Dr. Thoufeeq Rahman");
-  const [postText, setPostText] = useState("Latest Blogs...");
+  const [postText, setPostText] = useState("Latest Blogs");
 
   const titles = [
     "Lt. Dr. Thoufeeq Rahman",
@@ -66,6 +66,16 @@ const Index = () => {
     fetchLatestBlogPosts();
   }, []);
 
+  function getShortTitle(title: string) {
+    const words = title.split(" ");
+    if (words.length < 2) return title;
+    const [w1, w2, w3] = words;
+    if ((w1?.length > 5 && w2?.length > 4) || w1?.length > 5 || w2?.length > 4) {
+      return [w1, w2].filter(Boolean).join(" ");
+    }
+    return [w1, w2, w3].filter(Boolean).join(" ");
+  }
+
   useEffect(() => {
     if (latestBlogPosts.length > 0) {
       let index = 0;
@@ -73,7 +83,8 @@ const Index = () => {
         setFadePost(false); // Start fade-out animation
         setTimeout(() => {
           index = (index + 1) % latestBlogPosts.length;
-          setPostText(latestBlogPosts[index]?.title || "Latest Blogs...");
+          const title = latestBlogPosts[index]?.title || "Latest Blogs";
+          setPostText(getShortTitle(title));
           setCurrentPostIndex(index);
           setFadePost(true); // Start fade-in animation
         }, 200); // Duration of fade-out animation
@@ -244,7 +255,7 @@ const Index = () => {
                       <ChevronRight className="h-4 w-4" />
                       {latestBlogPosts.length > 0
                         ? sliceTitle(postText)
-                        : "Latest Blogs..."}
+                        : "Latest Blogs"}...
                     </span>
                   </span>
                   <ArrowUpRight className="h-4 w-4" />
