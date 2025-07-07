@@ -62,7 +62,7 @@ const About = () => {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
+                {/* <User className="h-5 w-5 text-blue-600" /> */}
                 Professional Summary
               </CardTitle>
             </CardHeader>
@@ -90,7 +90,7 @@ const About = () => {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-blue-600" />
+                {/* <Clock className="h-5 w-5 text-blue-600" /> */}
                 Teaching Experience
               </CardTitle>
               <CardDescription>12 Years, 4 Months, 18 Days</CardDescription>
@@ -114,7 +114,7 @@ const About = () => {
         <Card className="mb-12 hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <GraduationCap className="h-5 w-5 text-blue-600" />
+              {/* <GraduationCap className="h-5 w-5 text-blue-600" /> */}
               Educational Background
             </CardTitle>
           </CardHeader>
@@ -139,7 +139,7 @@ const About = () => {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-blue-600" />
+              {/* <BookOpen className="h-5 w-5 text-blue-600" /> */}
               Areas of Specialization
             </CardTitle>
           </CardHeader>

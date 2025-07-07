@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone, Download, MessageCircle } from "lucide-react";
+import { Mail, MailCheck, MapPin, Phone, Download, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -35,7 +35,7 @@ const Contact = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-4 rounded-lg border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3" >
-                    <Mail className="h-12 w-12 text-slate-600 " />
+                    <MailCheck className="h-12 w-12 text-slate-400 " />
                     <div>
                       <p className="font-medium text-slate-800">Primary Email</p>
                       <a 
@@ -79,7 +79,7 @@ const Contact = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-blue-600" />
+                  {/* <MessageCircle className="h-5 w-5 text-blue-600" /> */}
                   Professional Inquiries
                 </CardTitle>
               </CardHeader>
