@@ -49,16 +49,10 @@ const Navbar = () => {
 
           {/* Right side buttons */}
           <div className="flex items-center space-x-2">
-            <Button className="px-2 text-gray-700 py-2 font-semibold hover:bg-transparent bg-gray-200 rounded-full">
+            <Button className="px-2 text-gray-700 py-2 font-semibold bg-white hover:bg-transparent rounded-md">
               Book a call
             </Button>
-            <Button
-              id="menu-Button"
-              className="lg:hidden p-2 bg-gray-200 hover:bg-gray-300 rounded-full"
-              onClick={() => setIsOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+
 
             {/* Mobile Navigation */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -66,13 +60,13 @@ const Navbar = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="p-2 bg-gray-200 hover:bg-gray-300 rounded-full"
+                  className="p-2 bg-blue-100 hover:bg-gray-200 rounded-md active:outline-none focus:border-none focus:outline-none"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-72">
-                <div className="flex items-center justify-between mb-6">
+              <SheetContent side="right" className="w-72 bg-white active:outline-none focus:border-none  focus:outline-none">
+                <div className="flex items-center justify-between mb-6 active:outline-none  focus:outline-none">
                   <span className="font-bold text-lg">Menu</span>
                 </div>
                 <div className="flex flex-col space-y-2">
