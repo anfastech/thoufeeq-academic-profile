@@ -50,7 +50,7 @@ const Index = () => {
   const [fadeTitle, setFadeTitle] = useState(true);
   const [fadePost, setFadePost] = useState(true);
   const [titleText, setTitleText] = useState("Lt. Dr. Thoufeeq Rahman");
-  const [postText, setPostText] = useState("Latest Blog Posts...");
+  const [postText, setPostText] = useState("Latest Blogs...");
 
   const titles = [
     "Lt. Dr. Thoufeeq Rahman",
