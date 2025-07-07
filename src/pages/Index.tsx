@@ -132,18 +132,7 @@ const Index = () => {
     }
   };
 
-  const sliceTitle = (title: string, maxLength: number) => {
-    if (title.length <= maxLength) return title;
-
-    const sliced = title.substring(0, maxLength);
-    const lastSpaceIndex = sliced.lastIndexOf(" ");
-
-    if (lastSpaceIndex > 0) {
-      return sliced.substring(0, lastSpaceIndex) + "...";
-    }
-
-    return sliced + "...";
-  };
+  const sliceTitle = (title: string) => title.split(" ").slice(0, 3).join(" ") + (title.split(" ").length > 3 ? "..." : "");
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -240,7 +229,9 @@ const Index = () => {
                 <p className="ml-4 text-sm">Lt. Dr. Thoufeeq Rahman</p>
               </div>
               {/* Experience 2 */}
-              <div className="absolute flex flex-row w-auto min-w-64 py-3 font-semibold bg-white border right-12 lg:right-[30%] border-gray-300 px-7 bg-opacity-90 shadow-white -top-6 rounded-2xl">
+              <div className={`absolute flex flex-row w-auto min-w-64 py-3 font-semibold bg-white border right-12 lg:right-[30%] px-7 bg-opacity-90 shadow-white -top-6 rounded-2xl transition-colors duration-300 ${
+                fadePost ? "border-blue-300" : "border-gray-300"
+              }`}>
                 <Link
                   to="/blog"
                   className="flex items-center justify-between w-full text-sm hover:text-blue-600 transition-colors"
@@ -252,7 +243,7 @@ const Index = () => {
                     }`}>
                       <ChevronRight className="h-4 w-4" />
                       {latestBlogPosts.length > 0
-                        ? sliceTitle(postText, 12)
+                        ? sliceTitle(postText, 15)
                         : "Latest Blog Posts..."}
                     </span>
                   </span>
