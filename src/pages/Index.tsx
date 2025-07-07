@@ -244,7 +244,7 @@ const Index = () => {
                       <ChevronRight className="h-4 w-4" />
                       {latestBlogPosts.length > 0
                         ? sliceTitle(postText)
-                        : "Latest Blog Posts..."}
+                        : "Latest Blogs..."}
                     </span>
                   </span>
                   <ArrowUpRight className="h-4 w-4" />
