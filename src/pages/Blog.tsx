@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -87,7 +86,7 @@ const Blog = () => {
               <Card className="mb-12 hover:shadow-xl transition-all duration-300">
                 <div className="grid md:grid-cols-2 gap-6">
                   {blogPosts[0].thumbnail_url && (
-                    <div className="aspect-video md:aspect-square overflow-hidden rounded-l-lg">
+                    <div className="aspect-video md:aspect-square overflow-hidden rounded-t-lg lg:rounded-tr-none lg:rounded-l-lg lg:aspect-auto lg:h-96">
                       <img 
                         src={blogPosts[0].thumbnail_url} 
                         alt={blogPosts[0].title}
@@ -180,7 +179,7 @@ const Blog = () => {
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Library className="h-5 w-5 text-blue-600" />
+                    <Library className="h-7 w-7 text-blue-600" />
                     Blog Categories
                   </CardTitle>
                   <CardDescription>
@@ -205,7 +204,6 @@ const Blog = () => {
         ) : (
           <Card>
             <CardContent className="text-center py-12">
-              <BookOpen className="h-16 w-16 mx-auto mb-4 text-slate-400" />
               <h3 className="text-xl font-semibold text-slate-700 mb-2">No Blog Posts Yet</h3>
               <p className="text-slate-600">Check back soon for new articles and insights.</p>
             </CardContent>

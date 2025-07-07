@@ -261,7 +261,7 @@ const Index = () => {
               </div>
               {/* Background Image */}
               <img
-                src="/1000248019.jpg"
+                src="/any-bg.png"
                 alt="Background"
                 className="rounded-2xl lg:w-[75%] w-full object-cover"
                 onError={(e) => {

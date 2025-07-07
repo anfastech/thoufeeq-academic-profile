@@ -25,9 +25,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <img
-            src="/logo-thoufeeq-rahman.svg"
+            src="/logo-rahman.svg"
             alt="Dr. Thoufeeq Rahman"
-            className="w-24"
+            className="w-24 rounded-md"
           />
 
           {/* Desktop Navigation */}

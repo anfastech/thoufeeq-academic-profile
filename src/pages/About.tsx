@@ -78,10 +78,10 @@ const About = () => {
                 the works of prominent authors like Alaa Al Aswany.
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full ">Arabic Literature</Badge>
-                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full">Contemporary Fiction</Badge>
-                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full">Cultural Studies</Badge>
-                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-full">Literary Criticism</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-md ">Arabic Literature</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-md">Contemporary Fiction</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-md">Cultural Studies</Badge>
+                <Badge className="bg-black py-1 px-3 text-white font-semibold rounded-md">Literary Criticism</Badge>
               </div>
             </CardContent>
           </Card>
