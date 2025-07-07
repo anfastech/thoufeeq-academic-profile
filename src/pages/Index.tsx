@@ -73,7 +73,7 @@ const Index = () => {
         setFadePost(false); // Start fade-out animation
         setTimeout(() => {
           index = (index + 1) % latestBlogPosts.length;
-          setPostText(latestBlogPosts[index]?.title || "Latest Blog Posts...");
+          setPostText(latestBlogPosts[index]?.title || "Latest Blogs...");
           setCurrentPostIndex(index);
           setFadePost(true); // Start fade-in animation
         }, 200); // Duration of fade-out animation
