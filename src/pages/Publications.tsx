@@ -108,8 +108,8 @@ const Publications = () => {
             Scholarly contributions to the field of Arabic Literature and Contemporary Fiction Studies
           </div>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full">
-            <span className="text-[11px] md:text-sm font-medium text-blue-800">Researched on:</span>
-            <span className={`text-sm font-semibold text-blue-900 min-w-[200px] text-center transition-opacity duration-200 ${
+            <span className="text-sm font-medium text-blue-800">Researched on:</span>
+            <span className={`text-sm font-semibold text-blue-900 min-w-[160px] lg:min-w-[200px] text-left lg:text-center transition-opacity duration-200 ${
               fadeField ? "opacity-100" : "opacity-50"
             }`}>
               {fieldText}

@@ -243,7 +243,7 @@ const Index = () => {
                     }`}>
                       <ChevronRight className="h-4 w-4" />
                       {latestBlogPosts.length > 0
-                        ? sliceTitle(postText, 15)
+                        ? sliceTitle(postText)
                         : "Latest Blog Posts..."}
                     </span>
                   </span>
