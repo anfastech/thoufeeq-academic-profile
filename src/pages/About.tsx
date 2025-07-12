@@ -6,9 +6,11 @@ import { GraduationCap, BookOpen, Clock, User } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useDays } from "@/hooks/use-days";
+import { useResume } from "@/hooks/use-resume";
 
 const About = () => {
   const { timeElapsed } = useDays();
+  const { experiences, loading } = useResume();
   const years = timeElapsed.years;
   const months = timeElapsed.months;
   const days = timeElapsed.days;
@@ -31,22 +33,6 @@ const About = () => {
       institution: "MUA College, Pulikkal",
       year: "2006", 
       specialization: "Arabic Language and Literature"
-    }
-  ];
-
-  // TODO: Add experience to database, Manage with CMS
-  const experience = [
-    {
-      position: "Assistant Professor",
-      institution: "Department of Arabic, Government College",
-      duration: "2012 - Present",
-      description: "Teaching undergraduate and postgraduate courses in Arabic Literature, Language, and Islamic Studies."
-    },
-    {
-      position: "Guest Lecturer",
-      institution: "Various Colleges in Kerala",
-      duration: "2009 - 2012",
-      description: "Conducted lectures on Arabic Literature and Contemporary Middle Eastern Studies."
     }
   ];
 
@@ -103,16 +89,28 @@ const About = () => {
               <CardDescription>{years} Years, {months} Months, {days} Days</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {experience.map((exp, index) => (
-                  <div key={index} className="border-l-2 border-blue-200 pl-4">
-                    <h4 className="font-semibold text-slate-800">{exp.position}</h4>
-                    <p className="text-blue-600 font-medium">{exp.institution}</p>
-                    <p className="text-slate-500 text-sm mb-2">{exp.duration}</p>
-                    <p className="text-slate-700 text-sm">{exp.description}</p>
-                  </div>
-                ))}
-              </div>
+              {loading ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-600">Loading experience...</p>
+                </div>
+              ) : experiences.length > 0 ? (
+                <div className="space-y-6">
+                  {experiences.map((exp) => (
+                    <div key={exp.id} className="border-l-2 border-blue-200 pl-4">
+                      <h4 className="font-semibold text-slate-800">{exp.position}</h4>
+                      <p className="text-blue-600 font-medium">{exp.institution}</p>
+                      <p className="text-slate-500 text-sm mb-2">{exp.duration}</p>
+                      {exp.description && (
+                        <p className="text-slate-700 text-sm">{exp.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-slate-500">
+                  <p>No experience entries available</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

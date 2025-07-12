@@ -3,9 +3,10 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, BookOpen, FileText } from "lucide-react";
+import { LogOut, BookOpen, FileText, FileText as ResumeIcon } from "lucide-react";
 import { BlogManagement } from "@/components/admin/BlogManagement";
 import { PublicationManagement } from "@/components/admin/PublicationManagement";
+import { ResumeManagement } from "@/components/admin/ResumeManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="blog" className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="blog" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Blog Posts</span>
@@ -47,6 +48,11 @@ const AdminDashboard = () => {
               <span className="hidden sm:inline">Publications</span>
               <span className="sm:hidden">Pubs</span>
             </TabsTrigger>
+            <TabsTrigger value="resume" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <ResumeIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Resume</span>
+              <span className="sm:hidden">CV</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="blog">
@@ -55,6 +61,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="publications">
             <PublicationManagement />
+          </TabsContent>
+
+          <TabsContent value="resume">
+            <ResumeManagement />
           </TabsContent>
         </Tabs>
       </div>

@@ -32,6 +32,7 @@ import { useDays } from "@/hooks/use-days";
 import { usePublications } from "@/hooks/use-publications";
 import { useBlogs } from "@/hooks/use-blogs";
 import { useContent } from "@/hooks/use-content";
+import { useResume } from "@/hooks/use-resume";
 
 interface BlogPost {
   id: string;
@@ -189,6 +190,7 @@ const Index = () => {
   const { blogs } = useContent();
   const recentPosts = blogs.slice(0, 3) as BlogPost[];
   const latestBlogPosts = blogs.slice(0, 3) as LatestBlogPost[];
+  const { resume } = useResume();
 
   useEffect(() => {
     setLoading(false);
@@ -286,16 +288,27 @@ const Index = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700"
-                asChild
-              >
-                <a href="/resume.pdf" download>
+              {resume?.pdf_url ? (
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  asChild
+                >
+                  <a href={resume.pdf_url} target="_blank" rel="noopener noreferrer">
+                    <Download className="mr-2 h-5 w-5" />
+                    Download Resume
+                  </a>
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled
+                >
                   <Download className="mr-2 h-5 w-5" />
-                  Download Resume
-                </a>
-              </Button>
+                  Resume Unavailable
+                </Button>
+              )}
               <Button
                 className="hidden lg:flex border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3"
                 variant="outline"
