@@ -93,17 +93,17 @@ export const BlogManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Blog Posts Management</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h2 className="text-lg sm:text-xl font-semibold">Blog Posts Management</h2>
         <Dialog open={isBlogDialogOpen} onOpenChange={setIsBlogDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingPost(null)}>
+            <Button onClick={() => setEditingPost(null)} size="sm" className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               New Blog Post
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto w-[95vw] sm:w-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingPost ? 'Edit Blog Post' : 'Create New Blog Post'}
@@ -117,14 +117,14 @@ export const BlogManagement = () => {
         </Dialog>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {blogPosts.map((post) => (
           <Card key={post.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{post.title}</CardTitle>
-                  <CardDescription className="mt-2">
+            <CardHeader className="pb-3 sm:pb-6">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-base sm:text-lg break-words">{post.title}</CardTitle>
+                  <CardDescription className="mt-2 text-sm line-clamp-2">
                     {post.excerpt}
                   </CardDescription>
                 </div>
@@ -132,19 +132,19 @@ export const BlogManagement = () => {
                   <img 
                     src={post.thumbnail_url} 
                     alt={post.title}
-                    className="w-24 h-16 object-cover rounded ml-4"
+                    className="w-full sm:w-24 h-32 sm:h-16 object-cover rounded order-first sm:order-last"
                   />
                 )}
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Badge variant={post.published ? "default" : "secondary"}>
+            <CardContent className="pt-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={post.published ? "default" : "secondary"} className="text-xs">
                     {post.published ? "Published" : "Draft"}
                   </Badge>
                   {post.tags && post.tags.length > 0 && (
-                    <div className="flex gap-1">
+                    <div className="flex flex-wrap gap-1">
                       {post.tags.slice(0, 2).map((tag, index) => (
                         <Badge key={index} variant="outline" className="text-xs">
                           {tag}
@@ -153,20 +153,24 @@ export const BlogManagement = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handleEditBlog(post)}
+                    className="flex-1 sm:flex-none"
                   >
                     <Edit className="h-4 w-4" />
+                    <span className="ml-1 sm:hidden">Edit</span>
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handleDeleteBlog(post.id)}
+                    className="flex-1 sm:flex-none"
                   >
                     <Trash2 className="h-4 w-4" />
+                    <span className="ml-1 sm:hidden">Delete</span>
                   </Button>
                 </div>
               </div>

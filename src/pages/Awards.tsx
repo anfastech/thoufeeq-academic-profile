@@ -4,8 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Award, Calendar, MapPin, Star } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useDays } from "@/hooks/use-days";
+import { usePublications } from "@/hooks/use-publications";
 
 const Awards = () => {
+  const { timeElapsed } = useDays();
+  const years = timeElapsed.years;
+  const {publicationsCount} = usePublications();
+  const pubCount = publicationsCount;
+
   const mainAward = {
     title: "MUAC Aluminary Award 2021",
     description: "For outstanding academic contributions",
@@ -108,11 +115,11 @@ const Awards = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span>4 Published research articles in peer-reviewed journals</span>
+                  <span>{pubCount} Published research articles in peer-reviewed journals</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span>12+ years of dedicated teaching service</span>
+                  <span>{years}+ years of dedicated teaching service</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>

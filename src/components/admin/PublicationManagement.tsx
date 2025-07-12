@@ -99,17 +99,17 @@ export const PublicationManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Publications Management</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h2 className="text-lg sm:text-xl font-semibold">Publications Management</h2>
         <Dialog open={isPubDialogOpen} onOpenChange={setIsPubDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingPublication(null)}>
+            <Button onClick={() => setEditingPublication(null)} size="sm" className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               New Publication
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto w-[95vw] sm:w-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingPublication ? 'Edit Publication' : 'Add New Publication'}
@@ -127,48 +127,59 @@ export const PublicationManagement = () => {
         <CardHeader>
           <CardTitle>Publications List</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Publisher</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {publications.map((pub) => (
-                <TableRow key={pub.id}>
-                  <TableCell className="font-medium">{pub.title}</TableCell>
-                  <TableCell>{pub.publisher}</TableCell>
-                  <TableCell>{new Date(pub.publication_date).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{pub.type}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEditPublication(pub)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeletePublication(pub.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+        <CardContent className="p-0 sm:p-6">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs sm:text-sm">Title</TableHead>
+                  <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Publisher</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                  <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Type</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {publications.map((pub) => (
+                  <TableRow key={pub.id}>
+                    <TableCell className="font-medium text-xs sm:text-sm">
+                      <div className="space-y-1">
+                        <div className="font-medium">{pub.title}</div>
+                        <div className="text-xs text-gray-500 sm:hidden">{pub.publisher}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs sm:text-sm hidden sm:table-cell">{pub.publisher}</TableCell>
+                    <TableCell className="text-xs sm:text-sm">{new Date(pub.publication_date).toLocaleDateString()}</TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      <Badge variant="outline" className="text-xs">{pub.type}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 sm:gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEditPublication(pub)}
+                          className="h-8 w-8 sm:h-9 sm:w-auto p-0 sm:px-3"
+                        >
+                          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <span className="hidden sm:ml-1 sm:inline">Edit</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDeletePublication(pub.id)}
+                          className="h-8 w-8 sm:h-9 sm:w-auto p-0 sm:px-3"
+                        >
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <span className="hidden sm:ml-1 sm:inline">Delete</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

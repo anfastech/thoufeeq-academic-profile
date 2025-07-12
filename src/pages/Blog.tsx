@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Calendar, ArrowRight, Mail, Library } from "lucide-react";
+import { BookOpen, Calendar, ArrowRight, Mail, Library, Play, Image, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useContent } from "@/hooks/use-content";
 
 interface BlogPost {
   id: string;
@@ -16,32 +17,130 @@ interface BlogPost {
   thumbnail_url: string;
   tags: string[];
   created_at: string;
+  content_type?: 'text' | 'video' | 'photo' | 'mixed';
+  video_url?: string;
+  photo_urls?: string[];
+  media_description?: string;
 }
 
-const Blog = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+// Media display component moved outside to prevent recreation
+const MediaDisplay = ({ post }: { post: BlogPost }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Get all media items (exclude videos from slideshow)
+  const mediaItems = [];
+  if (post.photo_urls && post.photo_urls.length > 0) {
+    post.photo_urls.forEach(url => mediaItems.push({ type: 'image', url }));
+  }
+  if (post.thumbnail_url && !post.photo_urls?.includes(post.thumbnail_url)) {
+    mediaItems.push({ type: 'image', url: post.thumbnail_url });
+  }
 
+  // Auto-advance every 4 seconds
   useEffect(() => {
-    fetchBlogPosts();
-  }, []);
-
-  const fetchBlogPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('id, title, slug, excerpt, thumbnail_url, tags, created_at')
-        .eq('published', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setBlogPosts(data || []);
-    } catch (error) {
-      console.error('Error fetching blog posts:', error);
-    } finally {
-      setLoading(false);
+    if (mediaItems.length > 0 && !isPaused) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+      }, 4000);
+      return () => clearInterval(interval);
     }
+  }, [mediaItems.length, isPaused]);
+
+  const handleManualNavigation = (direction: 'next' | 'prev') => {
+    setIsPaused(true);
+    if (direction === 'next') {
+      setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+    } else {
+      setCurrentIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
+    }
+    
+    // Resume auto-slide after 6 seconds
+    setTimeout(() => {
+      setIsPaused(false);
+    }, 6000);
   };
+
+  // Show video separately if it exists
+  if (post.video_url) {
+    return (
+      <div className="aspect-video rounded-lg overflow-hidden">
+        <video
+          src={post.video_url}
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+      </div>
+    );
+  }
+
+  if (mediaItems.length === 0) {
+    return (
+      <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+        <Image className="h-12 w-12 text-gray-400" />
+      </div>
+    );
+  }
+
+  const currentMedia = mediaItems[currentIndex];
+
+  return (
+    <div className="relative aspect-video rounded-lg overflow-hidden group">
+      <img
+        src={currentMedia.url}
+        alt={post.title}
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      
+      {/* Media counter - always show */}
+      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+        {currentIndex + 1} / {mediaItems.length}
+      </div>
+      
+      {/* Navigation arrows - always show for better UX */}
+      <button
+        onClick={() => handleManualNavigation('prev')}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all opacity-0 group-hover:opacity-100"
+        aria-label="Previous media"
+        title="Previous media"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        onClick={() => handleManualNavigation('next')}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all opacity-0 group-hover:opacity-100"
+        aria-label="Next media"
+        title="Next media"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+      
+      {/* Slide indicators for multiple images */}
+      {mediaItems.length > 1 && (
+        <div className="absolute bottom-2 left-2 flex gap-1">
+          {mediaItems.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentIndex 
+                  ? 'bg-white' 
+                  : 'bg-white bg-opacity-50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Blog = () => {
+  const { blogs, loading } = useContent();
+  const blogPosts = blogs as BlogPost[];
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -85,19 +184,19 @@ const Blog = () => {
             {blogPosts.length > 0 && (
               <Card className="mb-12 hover:shadow-xl transition-all duration-300">
                 <div className="grid md:grid-cols-2 gap-6">
-                  {blogPosts[0].thumbnail_url && (
-                    <div className="aspect-video md:aspect-square overflow-hidden rounded-t-lg lg:rounded-tr-none lg:rounded-l-lg lg:aspect-auto lg:h-96">
-                      <img 
-                        src={blogPosts[0].thumbnail_url} 
-                        alt={blogPosts[0].title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+                  <MediaDisplay post={blogPosts[0]} />
                   <div className="p-6 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Badge className="bg-blue-100 text-blue-800 border-blue-300">Featured</Badge>
+                        {blogPosts[0].content_type && blogPosts[0].content_type !== 'text' && (
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            {blogPosts[0].content_type === 'video' && <Play className="h-3 w-3" />}
+                            {blogPosts[0].content_type === 'photo' && <Image className="h-3 w-3" />}
+                            {blogPosts[0].content_type === 'mixed' && <BookOpen className="h-3 w-3" />}
+                            {blogPosts[0].content_type}
+                          </Badge>
+                        )}
                         {blogPosts[0].tags && blogPosts[0].tags.length > 0 && (
                           <Badge variant="outline">{blogPosts[0].tags[0]}</Badge>
                         )}
@@ -133,20 +232,22 @@ const Blog = () => {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {blogPosts.slice(1).map((post) => (
                   <Card key={post.id} className="hover:shadow-lg transition-all duration-300 group">
-                    {post.thumbnail_url && (
-                      <div className="aspect-video overflow-hidden rounded-t-lg">
-                        <img 
-                          src={post.thumbnail_url} 
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
+                    <MediaDisplay post={post} />
                     <CardHeader className="pb-4">
                       <div className="flex items-center justify-between mb-2">
-                        {post.tags && post.tags.length > 0 && (
-                          <Badge variant="outline">{post.tags[0]}</Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {post.content_type && post.content_type !== 'text' && (
+                            <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                              {post.content_type === 'video' && <Play className="h-3 w-3" />}
+                              {post.content_type === 'photo' && <Image className="h-3 w-3" />}
+                              {post.content_type === 'mixed' && <BookOpen className="h-3 w-3" />}
+                              {post.content_type}
+                            </Badge>
+                          )}
+                          {post.tags && post.tags.length > 0 && (
+                            <Badge variant="outline">{post.tags[0]}</Badge>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1 text-slate-600 text-xs">
                           <Calendar className="h-3 w-3" />
                           <span>{formatDate(post.created_at)}</span>
@@ -202,27 +303,10 @@ const Blog = () => {
             )}
           </>
         ) : (
-          <Card>
-            <CardContent className="text-center py-12">
-              <h3 className="text-xl font-semibold text-slate-700 mb-2">No Blog Posts Yet</h3>
-              <p className="text-slate-600">Check back soon for new articles and insights.</p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-12">
+            <p className="text-slate-600">No blog posts available</p>
+          </div>
         )}
-
-        {/* Newsletter Signup */}
-        <Card className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-          <CardContent className="text-center py-12">
-            <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Get notified about new articles and research insights in Arabic Literature and contemporary literary studies.
-            </p>
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100">
-              <Mail className="mr-2 h-5 w-5" />
-              Subscribe to Updates
-            </Button>
-          </CardContent>
-        </Card>
       </div>
       
       <Footer />

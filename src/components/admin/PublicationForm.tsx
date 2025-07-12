@@ -85,7 +85,7 @@ export const PublicationForm = ({ editingPublication, onSuccess }: PublicationFo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
       <div className="space-y-2">
         <Label htmlFor="pub-title">Title</Label>
         <Input
@@ -93,6 +93,7 @@ export const PublicationForm = ({ editingPublication, onSuccess }: PublicationFo
           value={formData.title}
           onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
           required
+          placeholder="Enter publication title"
         />
       </div>
       <div className="space-y-2">
@@ -102,6 +103,7 @@ export const PublicationForm = ({ editingPublication, onSuccess }: PublicationFo
           value={formData.publisher}
           onChange={(e) => setFormData(prev => ({ ...prev, publisher: e.target.value }))}
           required
+          placeholder="Enter publisher name"
         />
       </div>
       <div className="space-y-2">
@@ -130,6 +132,7 @@ export const PublicationForm = ({ editingPublication, onSuccess }: PublicationFo
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           rows={4}
+          placeholder="Enter publication description..."
         />
       </div>
       <div className="space-y-2">

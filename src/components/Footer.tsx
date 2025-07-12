@@ -1,8 +1,12 @@
 
 import { Mail, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDays } from "@/hooks/use-days";
 
 const Footer = () => {
+  const { timeElapsed } = useDays();
+  const years = timeElapsed.years;
+  
   return (
     <footer className="bg-slate-900 text-slate-300 py-12">
       <div className="container mx-auto px-4">
@@ -11,7 +15,7 @@ const Footer = () => {
             <h3 className="font-bold text-white text-lg mb-4">Dr. Thoufeeq Rahman Vazhakkat</h3>
             <p className="text-sm leading-relaxed">
               Assistant Professor in Arabic, specializing in Arabic Language and Literature 
-              with over 12 years of teaching experience.
+              with over {years} years of teaching experience.
             </p>
           </div>
           

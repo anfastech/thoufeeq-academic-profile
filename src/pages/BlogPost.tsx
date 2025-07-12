@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, Play, Image, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,7 +20,120 @@ interface BlogPost {
   published: boolean;
   created_at: string;
   updated_at: string;
+  content_type?: 'text' | 'video' | 'photo' | 'mixed';
+  video_url?: string;
+  photo_urls?: string[];
+  media_description?: string;
 }
+
+// Media display component moved outside to prevent recreation
+const MediaDisplay = ({ className, post }: { className?: string, post: BlogPost }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Get all media items (exclude videos from slideshow)
+  const mediaItems = [];
+  if (post.photo_urls && post.photo_urls.length > 0) {
+    post.photo_urls.forEach(url => mediaItems.push({ type: 'image', url }));
+  }
+  if (post.thumbnail_url && !post.photo_urls?.includes(post.thumbnail_url)) {
+    mediaItems.push({ type: 'image', url: post.thumbnail_url });
+  }
+
+  useEffect(() => {
+    if (mediaItems.length > 0 && !isPaused) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [mediaItems.length, isPaused]);
+
+  const handleManualNavigation = (direction: 'next' | 'prev') => {
+    setIsPaused(true);
+    if (direction === 'next') {
+      setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+    } else {
+      setCurrentIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
+    }
+    
+    // Resume auto-slide after 6 seconds
+    setTimeout(() => {
+      setIsPaused(false);
+    }, 6000);
+  };
+
+  // If no media content, return null
+  if (!post.video_url && mediaItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={className}>
+      {/* Show video if it exists */}
+      {post.video_url && (
+        <div className="aspect-video mb-8 rounded-lg overflow-hidden shadow-lg">
+          <video
+            src={post.video_url}
+            className="w-full h-full object-cover"
+            controls
+            preload="metadata"
+          />
+        </div>
+      )}
+
+      {/* Show photo slideshow if photos exist */}
+      {mediaItems.length > 0 && (
+        <div className="relative aspect-video mb-8 rounded-lg overflow-hidden group shadow-lg">
+          <img
+            src={mediaItems[currentIndex].url}
+            alt={post.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          
+          {/* Media counter - always show */}
+          <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+            {currentIndex + 1} / {mediaItems.length}
+          </div>
+          
+          {/* Navigation arrows - always show for better UX */}
+          <button
+            onClick={() => handleManualNavigation('prev')}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all opacity-0 group-hover:opacity-100"
+            aria-label="Previous media"
+            title="Previous media"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => handleManualNavigation('next')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all opacity-0 group-hover:opacity-100"
+            aria-label="Next media"
+            title="Next media"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          
+          {/* Slide indicators for multiple images */}
+          {mediaItems.length > 1 && (
+            <div className="absolute bottom-2 left-2 flex gap-1">
+              {mediaItems.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentIndex 
+                      ? 'bg-white' 
+                      : 'bg-white bg-opacity-50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -105,16 +218,7 @@ const BlogPost = () => {
         </Button>
 
         <article className="max-w-4xl mx-auto">
-          {post.thumbnail_url && (
-            <div className="mb-8">
-              <img 
-                src={post.thumbnail_url} 
-                alt={post.title}
-                className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
-              />
-            </div>
-          )}
-
+          <MediaDisplay post={post} />
           <Card>
             <CardHeader>
               <div className="space-y-4">
@@ -127,6 +231,14 @@ const BlogPost = () => {
                     <Calendar className="h-4 w-4" />
                     <span>{formatDate(post.created_at)}</span>
                   </div>
+                  {post.content_type && post.content_type !== 'text' && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      {post.content_type === 'video' && <Play className="h-3 w-3" />}
+                      {post.content_type === 'photo' && <Image className="h-3 w-3" />}
+                      {post.content_type === 'mixed' && <BookOpen className="h-3 w-3" />}
+                      {post.content_type}
+                    </Badge>
+                  )}
                 </div>
 
                 {post.tags && post.tags.length > 0 && (
@@ -146,7 +258,9 @@ const BlogPost = () => {
                 )}
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent>              
+
+              {/* Text Content */}
               <div className="prose prose-slate max-w-none">
                 {post.content?.split('\n').map((paragraph, index) => (
                   <p key={index} className="mb-4 leading-relaxed">

@@ -5,8 +5,14 @@ import { Separator } from "@/components/ui/separator";
 import { GraduationCap, BookOpen, Clock, User } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useDays } from "@/hooks/use-days";
 
 const About = () => {
+  const { timeElapsed } = useDays();
+  const years = timeElapsed.years;
+  const months = timeElapsed.months;
+  const days = timeElapsed.days;
+  
   const education = [
     {
       degree: "Ph.D. in Arabic Literature",
@@ -28,6 +34,7 @@ const About = () => {
     }
   ];
 
+  // TODO: Add experience to database, Manage with CMS
   const experience = [
     {
       position: "Assistant Professor",
@@ -68,7 +75,7 @@ const About = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-slate-700 leading-relaxed">
-                With over 12 years, 4 months, and 18 days of dedicated teaching experience, 
+                With over {years} years, {months} months, and {days} days of dedicated teaching experience, 
                 I have been committed to fostering a deep understanding of Arabic Language and Literature 
                 among students at various academic levels.
               </p>
@@ -93,7 +100,7 @@ const About = () => {
                 {/* <Clock className="h-5 w-5 text-blue-600" /> */}
                 Teaching Experience
               </CardTitle>
-              <CardDescription>12 Years, 4 Months, 18 Days</CardDescription>
+              <CardDescription>{years} Years, {months} Months, {days} Days</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">

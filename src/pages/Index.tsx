@@ -19,11 +19,19 @@ import {
   ArrowUpRight,
   Calendar,
   ChevronRight,
+  Play,
+  Image,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useDays } from "@/hooks/use-days";
+import { usePublications } from "@/hooks/use-publications";
+import { useBlogs } from "@/hooks/use-blogs";
+import { useContent } from "@/hooks/use-content";
 
 interface BlogPost {
   id: string;
@@ -33,6 +41,10 @@ interface BlogPost {
   thumbnail_url: string;
   tags: string[];
   created_at: string;
+  content_type?: 'text' | 'video' | 'photo' | 'mixed';
+  video_url?: string;
+  photo_urls?: string[];
+  media_description?: string;
 }
 
 interface LatestBlogPost {
@@ -41,9 +53,121 @@ interface LatestBlogPost {
   slug: string;
 }
 
+// Media display component moved outside to prevent recreation
+const MediaDisplay = ({ post }: { post: BlogPost }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Get all media items (exclude videos from slideshow)
+  const mediaItems = [];
+  if (post.photo_urls && post.photo_urls.length > 0) {
+    post.photo_urls.forEach(url => mediaItems.push({ type: 'image', url }));
+  }
+  if (post.thumbnail_url && !post.photo_urls?.includes(post.thumbnail_url)) {
+    mediaItems.push({ type: 'image', url: post.thumbnail_url });
+  }
+
+  useEffect(() => {
+    if (mediaItems.length > 0 && !isPaused) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [mediaItems.length, isPaused]);
+
+  const handleManualNavigation = (direction: 'next' | 'prev') => {
+    setIsPaused(true);
+    if (direction === 'next') {
+      setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+    } else {
+      setCurrentIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
+    }
+    
+    // Resume auto-slide after 6 seconds
+    setTimeout(() => {
+      setIsPaused(false);
+    }, 6000);
+  };
+
+  // Show video separately if it exists
+  if (post.video_url) {
+    return (
+      <div className="aspect-video rounded-lg overflow-hidden">
+        <video
+          src={post.video_url}
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+      </div>
+    );
+  }
+
+  if (mediaItems.length === 0) {
+    return (
+      <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+        <Image className="h-12 w-12 text-gray-400" />
+      </div>
+    );
+  }
+
+  const currentMedia = mediaItems[currentIndex];
+
+  return (
+    <div className="relative aspect-video rounded-lg overflow-hidden group">
+      <img
+        src={currentMedia.url}
+        alt={post.title}
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      
+      {/* Media counter - always show */}
+      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+        {currentIndex + 1} / {mediaItems.length}
+      </div>
+      
+      {/* Navigation arrows - always show for better UX */}
+      <button
+        onClick={() => handleManualNavigation('prev')}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all opacity-0 group-hover:opacity-100"
+        aria-label="Previous media"
+        title="Previous media"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        onClick={() => handleManualNavigation('next')}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all opacity-0 group-hover:opacity-100"
+        aria-label="Next media"
+        title="Next media"
+      >
+        <ChevronRightIcon className="h-4 w-4" />
+      </button>
+      
+      {/* Slide indicators for multiple images */}
+      {mediaItems.length > 1 && (
+        <div className="absolute bottom-2 left-2 flex gap-1">
+          {mediaItems.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentIndex 
+                  ? 'bg-white' 
+                  : 'bg-white bg-opacity-50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Index = () => {
-  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
-  const [latestBlogPosts, setLatestBlogPosts] = useState<LatestBlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPostIndex, setCurrentPostIndex] = useState(0);
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
@@ -51,6 +175,7 @@ const Index = () => {
   const [fadePost, setFadePost] = useState(true);
   const [titleText, setTitleText] = useState("Lt. Dr. Thoufeeq Rahman");
   const [postText, setPostText] = useState("Latest Blogs");
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   const titles = [
     "Lt. Dr. Thoufeeq Rahman",
@@ -61,16 +186,23 @@ const Index = () => {
     "Cultural Scholar",
   ];
 
+  const { blogs } = useContent();
+  const recentPosts = blogs.slice(0, 3) as BlogPost[];
+  const latestBlogPosts = blogs.slice(0, 3) as LatestBlogPost[];
+
   useEffect(() => {
-    fetchRecentPosts();
-    fetchLatestBlogPosts();
-  }, []);
+    setLoading(false);
+  }, [blogs]);
 
   function getShortTitle(title: string) {
     const words = title.split(" ");
     if (words.length < 2) return title;
     const [w1, w2, w3] = words;
-    if ((w1?.length > 5 && w2?.length > 4) || w1?.length > 5 || w2?.length > 4) {
+    if (
+      (w1?.length > 5 && w2?.length > 4) ||
+      w1?.length > 5 ||
+      w2?.length > 4
+    ) {
       return [w1, w2].filter(Boolean).join(" ");
     }
     return [w1, w2, w3].filter(Boolean).join(" ");
@@ -109,41 +241,9 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchRecentPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("id, title, slug, excerpt, thumbnail_url, tags, created_at")
-        .eq("published", true)
-        .order("created_at", { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      setRecentPosts(data || []);
-    } catch (error) {
-      console.error("Error fetching recent posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchLatestBlogPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("id, title, slug")
-        .eq("published", true)
-        .order("created_at", { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      setLatestBlogPosts(data || []);
-    } catch (error) {
-      console.error("Error fetching latest blog posts:", error);
-    }
-  };
-
-  const sliceTitle = (title: string) => title.split(" ").slice(0, 3).join(" ") + (title.split(" ").length > 3 ? "..." : "");
+  const sliceTitle = (title: string) =>
+    title.split(" ").slice(0, 3).join(" ") +
+    (title.split(" ").length > 3 ? "..." : "");
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -154,32 +254,10 @@ const Index = () => {
     });
   };
 
-  const publications = [
-    {
-      title: "Political Issues in the Novel Chicago",
-      publisher: "University of Calicut",
-      date: "08/09/2021",
-      issn: "2278-764X",
-    },
-    {
-      title: "Alaa Al Aswany: An Edifice in the Modern Arabic Literature",
-      publisher: "University of Kerala",
-      date: "01/07/2019",
-      issn: "2277-2839",
-    },
-    {
-      title: "Socio-realistic Elements in the Novel Imara: Ya'qoubian",
-      publisher: "Kalikoot, University of Calicut",
-      date: "01/01/2019",
-      issn: "2278-764X",
-    },
-    {
-      title: "Alienation and its impacts in the Novel Chicago",
-      publisher: "Maharaja's College Ernakulam",
-      date: "01/06/2016",
-      issn: "2278-7267",
-    },
-  ];
+  const { getYearsOnly, timeElapsed } = useDays();
+  const { publications, publicationsCount } = usePublications();
+  const { blogsCount } = useBlogs();
+  const years = getYearsOnly();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -202,7 +280,7 @@ const Index = () => {
             </div>
 
             <p className="text-slate-700 text-md leading-relaxed">
-              With over 12 years of dedicated teaching experience, I specialize
+              With over {years} of dedicated teaching experience, I specialize
               in Arabic Language and Literature, contributing to academic
               research and fostering cultural understanding through education.
             </p>
@@ -240,22 +318,27 @@ const Index = () => {
                 <p className="ml-4 text-sm">Lt. Dr. Thoufeeq Rahman</p>
               </div>
               {/* Experience 2 */}
-              <div className={`absolute flex flex-row w-auto min-w-64 py-3 font-semibold bg-white border right-12 lg:right-[30%] px-7 bg-opacity-90 shadow-white -top-6 rounded-2xl transition-colors duration-300 ${
-                fadePost ? "border-blue-300" : "border-gray-300"
-              }`}>
+              <div
+                className={`absolute flex flex-row w-auto min-w-64 py-3 font-semibold bg-white border right-12 lg:right-[30%] px-7 bg-opacity-90 shadow-white -top-6 rounded-2xl transition-colors duration-300 ${
+                  fadePost ? "border-blue-300" : "border-gray-300"
+                }`}
+              >
                 <Link
                   to="/blog"
                   className="flex items-center justify-between w-full text-sm hover:text-blue-600 transition-colors"
                 >
                   <span className="ml-4 flex items-center gap-1">
                     Blogs
-                    <span className={`transition-opacity duration-200 flex items-center gap-1 ${
-                      fadePost ? "opacity-100" : "opacity-50"
-                    }`}>
+                    <span
+                      className={`transition-opacity duration-200 flex items-center gap-1 ${
+                        fadePost ? "opacity-100" : "opacity-50"
+                      }`}
+                    >
                       <ChevronRight className="h-4 w-4" />
                       {latestBlogPosts.length > 0
                         ? sliceTitle(postText)
-                        : "Latest Blogs"}...
+                        : "Latest Blogs"}
+                      ...
                     </span>
                   </span>
                   <ArrowUpRight className="h-4 w-4" />
@@ -271,31 +354,6 @@ const Index = () => {
                     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face";
                 }}
               />
-
-              {/* <div className="relative flex flex-col -ml-[100px] -top-[280px]">
-                <p className="absolute hidden text-2xl font-gochi lg:block -top-0 -mr-40 rotate-12 right-1/4 bg-opacity-100">
-                  Lt. Dr. Thoufeeq Rahman
-                </p>
-                <span className="bg-blue-300 mr-0 rotate-6">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="103" 
-                    height="102" 
-                    viewBox="0 0 103 102" 
-                    fill="none" 
-                    className="absolute hidden lg:block right-1/4 translate-x-4 transform"
-                  >
-                    <g>
-                      <path 
-                        d="M100.676 26.5417C93.9574 46.1137 83.3723 65.5204 62.3048 74.1115C51.0557 78.6989 36.7215 76.3709 36.7673 62.5332C36.7985 53.1087 42.243 38.3844 53.849 37.3949C66.6654 36.3021 46.8111 57.0334 44.2548 58.8791C32.2897 67.5184 20.2216 71.4112 5.76428 74.151C0.348605 75.1774 3.24474 76.5966 6.85897 77.2296C9.99484 77.7788 13.5771 78.3248 16.755 78.0657C17.7243 77.9867 11.502 77.2793 10.5148 77.213C6.28171 76.9284 1.40658 76.4418 2.9682 71.2948C3.21916 70.4678 6.25335 62.9691 7.53037 63.112C8.19484 63.1864 9.21134 68.8129 9.5344 69.5548C11.6329 74.3731 14.1134 76.5032 19.3253 77.6737" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round"
-                      />
-                    </g>
-                  </svg>
-                </span>
-              </div> */}
             </div>
           </div>
         </div>
@@ -307,20 +365,26 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-blue-600 mb-2">12+</div>
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {timeElapsed.years}+
+                </div>
                 <div className="text-slate-600">Years Teaching Experience</div>
               </CardContent>
             </Card>
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-blue-600 mb-2">4</div>
-                <div className="text-slate-600">Published Articles</div>
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {publicationsCount}
+                </div>
+                <div className="text-slate-600">Publications</div>
               </CardContent>
             </Card>
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-blue-600 mb-2">1</div>
-                <div className="text-slate-600">Academic Awards</div>
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {blogsCount}
+                </div>
+                <div className="text-slate-600">Blog Posts</div>
               </CardContent>
             </Card>
           </div>
@@ -347,12 +411,24 @@ const Index = () => {
                   {pub.title}
                 </CardTitle>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <Badge className="border border-gray-300 bg-white text-slate-600 font-semibold rounded-full py-1 px-3" variant="secondary">{pub.publisher}</Badge>
-                  <Badge className="border border-gray-300 bg-white text-slate-600 font-semibold rounded-full py-1 px-3" variant="outline">ISSN: {pub.issn}</Badge>
+                  <Badge
+                    className="border border-gray-300 bg-white text-slate-600 font-semibold rounded-full py-1 px-3"
+                    variant="secondary"
+                  >
+                    {pub.publisher}
+                  </Badge>
+                  <Badge
+                    className="border border-gray-300 bg-white text-slate-600 font-semibold rounded-full py-1 px-3"
+                    variant="outline"
+                  >
+                    ISSN: {pub.issn}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600 ">Published: {pub.date}</p>
+                <p className="text-slate-600 ">
+                  Published: {formatDate(pub.publication_date)}
+                </p>
               </CardContent>
             </Card>
           ))}
@@ -376,82 +452,76 @@ const Index = () => {
               Recent Blog Posts
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              Latest insights and reflections on Arabic Literature and
-              contemporary literary studies
+              Insights, research findings, and reflections on Arabic Literature
+              and contemporary literary studies
             </p>
           </div>
 
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-slate-600">Loading recent posts...</p>
+              <p className="text-slate-600">Loading blog posts...</p>
             </div>
           ) : recentPosts.length > 0 ? (
-            <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                {recentPosts.map((post) => (
-                  <Card
-                    key={post.id}
-                    className="hover:shadow-lg transition-all duration-300 group"
-                  >
-                    {post.thumbnail_url && (
-                      <div className="aspect-video overflow-hidden rounded-t-lg">
-                        <img
-                          src={post.thumbnail_url}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between mb-2">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recentPosts.map((post) => (
+                <Card key={post.id} className="hover:shadow-lg transition-all duration-300 group">
+                  {/* Media Display */}
+                  <MediaDisplay post={post} />
+                  
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        {post.content_type && post.content_type !== 'text' && (
+                          <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                            {post.content_type === 'video' && <Play className="h-3 w-3" />}
+                            {post.content_type === 'photo' && <Image className="h-3 w-3" />}
+                            {post.content_type === 'mixed' && <BookOpen className="h-3 w-3" />}
+                            {post.content_type}
+                          </Badge>
+                        )}
                         {post.tags && post.tags.length > 0 && (
                           <Badge variant="outline">{post.tags[0]}</Badge>
                         )}
-                        <div className="flex items-center gap-1 text-slate-500 text-xs">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(post.created_at)}</span>
-                        </div>
                       </div>
-                      <CardTitle className="text-lg text-slate-800 leading-tight group-hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </CardTitle>
-                      {post.excerpt && (
-                        <CardDescription className="text-sm mt-2 line-clamp-3">
-                          {post.excerpt}
-                        </CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        asChild
-                        className="p-0 h-auto font-medium"
-                      >
-                        <Link to={`/blog/${post.slug}`}>
-                          Read More
-                          <ArrowUpRight className="ml-1 h-3 w-3" />
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              <div className="text-center">
-                <Button variant="outline" size="lg" asChild>
-                  <Link to="/blog">
-                    <BookOpen className="mr-2 h-5 w-5" />
-                    View All Blog Posts
-                  </Link>
-                </Button>
-              </div>
-            </>
+                      <div className="flex items-center gap-1 text-slate-600 text-xs">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDate(post.created_at)}</span>
+                      </div>
+                    </div>
+                    <CardTitle className="text-lg text-slate-800 leading-tight group-hover:text-blue-600 transition-colors">
+                      {post.title}
+                    </CardTitle>
+                    {post.excerpt && (
+                      <CardDescription className="text-sm mt-2">
+                        {post.excerpt}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <Button variant="ghost" size="sm" asChild className="p-0 h-auto">
+                      <Link to={`/blog/${post.slug}`}>
+                        Read More
+                        <ArrowUpRight className="ml-1 h-3 w-3" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-slate-600">No blog posts available yet.</p>
+              <p className="text-slate-600">No blog posts available</p>
             </div>
           )}
+
+          <div className="text-center mt-8">
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/blog">
+                <BookOpen className="mr-2 h-5 w-5" />
+                View All Blog Posts
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
