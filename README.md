@@ -1,73 +1,177 @@
-# Welcome to your Lovable project
+# Thoufeeq Academic Profile
 
-## Project info
+A dynamic academic profile and portfolio website built with Next.js, featuring a blog system, publication management, and admin dashboard.
 
-**URL**: https://lovable.dev/projects/3b12457e-4cf2-4b84-9f32-942025c95f54
+## 🚀 Features
 
-## How can I edit this code?
+- **Dynamic Content Management**: Blog posts, publications, and resume management
+- **Admin Dashboard**: Secure admin interface for content management
+- **Responsive Design**: Mobile-first design with modern UI components
+- **Real-time Updates**: Supabase integration for dynamic content
+- **Media Support**: Image and video slideshows for blog posts
+- **Resume Management**: PDF upload and experience tracking
+- **Contact Integration**: Dynamic resume download and contact form
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn/ui
+- **Database**: Supabase
+- **Deployment**: Vercel
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3b12457e-4cf2-4b84-9f32-942025c95f54) and start prompting.
+## 📦 Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd thoufeeq-academic-profile
+   ```
 
-**Use your preferred IDE**
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   bun install
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. **Set up environment variables**
+   Create a `.env.local` file in the root directory:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+4. **Set up Supabase**
+   - Create a new Supabase project
+   - Run the migrations in `supabase/migrations/`
+   - Configure storage buckets for media uploads
 
-Follow these steps:
+5. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   bun dev
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🏗️ Project Structure
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+thoufeeq-academic-profile/
+├── src/
+│   ├── app/                    # Next.js app directory
+│   ├── components/             # React components
+│   │   ├── admin/             # Admin dashboard components
+│   │   ├── ui/                # Shadcn/ui components
+│   │   └── ...                # Other components
+│   ├── hooks/                 # Custom React hooks
+│   ├── integrations/          # External service integrations
+│   │   └── supabase/          # Supabase client and types
+│   ├── lib/                   # Utility functions
+│   └── pages/                 # Page components
+├── supabase/                  # Supabase configuration
+│   ├── config.toml           # Supabase config
+│   └── migrations/           # Database migrations
+├── public/                    # Static assets
+└── ...                       # Configuration files
 ```
 
-**Edit a file directly in GitHub**
+## 📋 Available Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run type-check` - Run TypeScript type checking
 
-**Use GitHub Codespaces**
+## 🔧 Configuration
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Supabase Setup
 
-## What technologies are used for this project?
+1. Create a new Supabase project
+2. Run the database migrations:
+   ```bash
+   supabase db push
+   ```
+3. Configure storage buckets for media uploads
+4. Set up Row Level Security (RLS) policies
 
-This project is built with:
+### Environment Variables
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Required environment variables:
 
-## How can I deploy this project?
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key (for admin functions)
 
-Simply open [Lovable](https://lovable.dev/projects/3b12457e-4cf2-4b84-9f32-942025c95f54) and click on Share -> Publish.
+## 🚀 Deployment
 
-## Can I connect a custom domain to my Lovable project?
+### Vercel (Recommended)
 
-Yes, you can!
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy automatically on push to main branch
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Manual Deployment
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. Build the project:
+   ```bash
+   npm run build
+   ```
+2. Start the production server:
+   ```bash
+   npm run start
+   ```
+
+## 📱 Features
+
+### Public Pages
+- **Home**: Landing page with hero section and featured content
+- **About**: Academic background, experience, and resume
+- **Publications**: Research publications and academic work
+- **Blog**: Dynamic blog posts with media support
+- **Awards**: Academic achievements and recognitions
+- **Contact**: Contact form and resume download
+
+### Admin Dashboard
+- **Blog Management**: Create, edit, and delete blog posts
+- **Publication Management**: Manage research publications
+- **Resume Management**: Upload PDF resume and manage experience entries
+- **Media Upload**: Support for images and videos
+
+## 🔒 Security
+
+- Admin authentication required for dashboard access
+- Row Level Security (RLS) policies in Supabase
+- Secure file uploads with type validation
+- Environment variable protection
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👨‍💻 Author
+
+Thoufeeq Rahman - Academic Profile Website
+
+---
+
+For support or questions, please contact through the website's contact form.
