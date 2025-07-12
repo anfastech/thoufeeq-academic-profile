@@ -1,11 +1,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, MailCheck, MapPin, Phone, Download, MessageCircle } from "lucide-react";
+import { Mail, MailCheck, MapPin, Phone, Download, MessageCircle, FileText } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useResume } from "@/hooks/use-resume"; 
 
 const Contact = () => {
+  const { resume, loading } = useResume(); 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
@@ -59,7 +61,7 @@ const Contact = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {/* <Download className="h-5 w-5 text-blue-600" /> */}
+                  <FileText className="h-5 w-5 text-blue-600" />
                   Academic Resources
                 </CardTitle>
                 <CardDescription>
@@ -67,12 +69,36 @@ const Contact = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" size="lg" className="w-full border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3" asChild>
-                  <a href="/resume.pdf" download>
-                    <Download className="mr-2 h-5 w-5" />
-                    Download Resume (PDF)
-                  </a>
-                </Button>
+                {loading ? (
+                  <div className="flex items-center justify-center py-6">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <span className="ml-3 text-slate-600">Loading resume...</span>
+                  </div>
+                ) : resume?.pdf_url ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-4 rounded-lg border border-gray-300 bg-white">
+                      <FileText className="h-8 w-8 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-slate-800">Current Resume</p>
+                        <p className="text-sm text-slate-500">
+                          Last updated: {new Date(resume.updated_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="lg" className="w-full border border-gray-300 bg-white text-slate-600 font-semibold py-1 px-3" asChild>
+                      <a href={resume.pdf_url} target="_blank" rel="noopener noreferrer">
+                        <Download className="mr-2 h-5 w-5" />
+                        Download Resume (PDF)
+                      </a>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-slate-500">
+                    <FileText className="mx-auto h-12 w-12 mb-3 text-slate-400" />
+                    <p className="font-medium">Resume not available</p>
+                    <p className="text-sm">Please check back later or contact directly</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
