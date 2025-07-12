@@ -1,4 +1,4 @@
-# Thoufeeq Academic Profile
+# Academic Profile ( Arabic Lecture )
 
 A dynamic academic profile and portfolio website built with Next.js, featuring a blog system, publication management, and admin dashboard.
 
@@ -41,9 +41,8 @@ A dynamic academic profile and portfolio website built with Next.js, featuring a
 3. **Set up environment variables**
    Create a `.env.local` file in the root directory:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   DATABASE_URL=your_supabase_url
+   DB_PUBLIC_KEY=your_supabase_anon_key
    ```
 
 4. **Set up Supabase**
@@ -85,14 +84,6 @@ thoufeeq-academic-profile/
 └── ...                       # Configuration files
 ```
 
-## 📋 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
-
 ## 🔧 Configuration
 
 ### Supabase Setup
@@ -108,30 +99,12 @@ thoufeeq-academic-profile/
 ### Environment Variables
 
 Required environment variables:
-
+Create a `.env.local` file in the root directory:
+```env
 - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key (for admin functions)
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically on push to main branch
-
-### Manual Deployment
-
-1. Build the project:
-   ```bash
-   npm run build
-   ```
-2. Start the production server:
-   ```bash
-   npm run start
-   ```
+```
 
 ## 📱 Features
 
@@ -156,22 +129,4 @@ Required environment variables:
 - Secure file uploads with type validation
 - Environment variable protection
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 👨‍💻 Author
-
-Thoufeeq Rahman - Academic Profile Website
-
 ---
-
-For support or questions, please contact through the website's contact form.
