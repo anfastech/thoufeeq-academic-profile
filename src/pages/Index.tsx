@@ -243,9 +243,25 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const sliceTitle = (title: string) =>
-    title.split(" ").slice(0, 3).join(" ") +
-    (title.split(" ").length > 3 ? "..." : "");
+  const sliceTitle = (title: string) => {
+    const words = title.split(" ");
+    
+    // Check if first two words are capitalized
+    if (words.length >= 2) {
+      const firstWord = words[0];
+      const secondWord = words[1];
+      
+      // Check if both first and second words start with capital letters
+      if (firstWord && secondWord && 
+          firstWord[0] === firstWord[0]?.toUpperCase() && 
+          secondWord[0] === secondWord[0]?.toUpperCase()) {
+        return words.slice(0, 2).join(" ") + "...";
+      }
+    }
+    
+    // Default behavior: show first 3 words
+    return words.slice(0, 3).join(" ") + (words.length > 3 ? "..." : "");
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
