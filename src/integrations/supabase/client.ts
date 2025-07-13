@@ -2,16 +2,28 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const DATABASE_URL = process.env.DATABASE_URL;
-const DB_PUBLIC_KEY = process.env.DB_PUBLIC_KEY;
+const SUPABASE_PUBLIC_URL = "https://kljojswtseenoqiirveq.supabase.co";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLIC_KEY as string;
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-
-export const supabase = createClient<Database>(DATABASE_URL, DB_PUBLIC_KEY, {
+export const supabase = createClient<Database>(SUPABASE_PUBLIC_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-v2',
+    },
+  },
+  // Enable realtime subscriptions with optimized settings
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
+  // Optimize database queries
+  db: {
+    schema: 'public',
+  },
 });
